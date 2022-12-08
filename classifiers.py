@@ -12,10 +12,11 @@ class exp_linear(nn.Module):
     def forward(self, x, inds=1.0):
         y = torch.log(1 + torch.exp( - inds * self.linear(x)))
         return y
+    
     def predict(self,x):
         y=self.linear(x)
-        tmpf=lambda x:-1 if x[0]>=0 else 1
-        return [tmpf(x) for x in y]
+        tmpf=lambda x:-1.0 if x[0]>=0 else 1.0
+        return torch.tensor([tmpf(x) for x in y])
 
 class logistic(nn.Module):
     def __init__(self, dims):
@@ -28,7 +29,8 @@ class logistic(nn.Module):
         if(inds<0):
             y=1-y
         return y
+    
     def predict(self,x):
         y=self.linear(x)
-        tmpf=lambda x:-1 if x[0]>=0 else 1
-        return [tmpf(x) for x in y]
+        tmpf=lambda x:-1.0 if x[0]>=0 else 1.0
+        return torch.tensor([tmpf(x) for x in y])
