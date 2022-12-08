@@ -43,6 +43,9 @@ class Model(object):
 
     def load(self, filename):
         self.classifier.load_state_dict(torch.load(filename + "_params"))
+        
+    def predict(self,x,probs=False):
+        return self.classifier.predict(x,probs)
 
 
 

@@ -43,13 +43,13 @@ if __name__ == "__main__":
     torch.manual_seed(args.seed)
 
     x_data_0, x_data_1, y_data_0, y_data_1 = load_data(args)
-    model = Model(x_data_0.shape[1], args.delta, args.lr, args.classifier, args.method)
+    model = Model(x_data_0.shape[1], 0.03, args.lr, 'logistic', args.method)
     if args.train_type == 'base':
-        train_op = train.Base_train(model, x_data_0, x_data_1, y_data_0, y_data_1, args.epochs, args.split_rate, args.bs_ratio)
+        train_op = train.Base_train(model, x_data_0, x_data_1, y_data_0, y_data_1, args.epochs, 1, args.bs_ratio)
     
     train_op.train()
     train_op.feature_selection()
-    train_op.save_results()
+    train_op.save_results('logistic_003')
 
     
 

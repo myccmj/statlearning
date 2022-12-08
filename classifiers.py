@@ -13,9 +13,15 @@ class exp_linear(nn.Module):
         y = torch.log(1 + torch.exp( - inds * self.linear(x)))
         return y
     
-    def predict(self,x):
+    def predict(self,x,probs=False):
+        if(probs):
+            y_1 = torch.log(1 + torch.exp( self.linear(x))).detach()
+            y_neg1=torch.log(1 + torch.exp( -self.linear(x))).detach()
+            # print(y_1)
+            tmpf=lambda x:x[0]/(x[0]+x[1])
+            return [tmpf((y_1[i][0].item(),y_neg1[i][0].item())) for i in range(len(y_1))]
         y=self.linear(x)
-        tmpf=lambda x:-1.0 if x[0]>=0 else 1.0
+        tmpf=lambda x:1 if x[0]>=0 else -1
         return torch.tensor([tmpf(x) for x in y])
 
 class logistic(nn.Module):
@@ -30,7 +36,12 @@ class logistic(nn.Module):
             y=1-y
         return y
     
-    def predict(self,x):
+    def predict(self,x,probs=False):
+        if(probs):
+            y_1 = 1-1/(1 + torch.exp(self.linear(x))).detach()
+            # print(y_1)
+            tmpf=lambda x:x[0].item()
+            return [tmpf(x) for x in y_1]
         y=self.linear(x)
-        tmpf=lambda x:-1.0 if x[0]>=0 else 1.0
+        tmpf=lambda x:1.0 if x[0]>=0 else -1.0
         return torch.tensor([tmpf(x) for x in y])
