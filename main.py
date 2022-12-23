@@ -49,7 +49,7 @@ if __name__ == "__main__":
     
     train_op.train()
     train_op.feature_selection()
-    train_op.save_results()
+    train_op.save_results(file_name=args.classifier)
 
     
 

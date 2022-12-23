@@ -58,6 +58,5 @@ class Base_train(object):
         pass
 
     # Save results
-    def save_results(self):
-        pass
-
+    def save_results(self,filename='Default'):
+        self.model.save(filename)
