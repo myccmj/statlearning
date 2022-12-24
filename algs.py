@@ -8,6 +8,8 @@ class Model(object):
             self.classifier = cf.exp_linear(dims)
         if classifier == 'linear_logistic':
             self.classifier = cf.logistic(dims)
+        if classifier == 'DNN':
+            self.classifier = cf.DNN(dims)
         
         if method == 'base':
             self.method = Base()
@@ -68,10 +70,10 @@ class Lagrange(object):
         self.rho = rho
     
     def weight_loss(self, loss_0, loss_1):
-        return self.lamda * (loss_0 - self.delta) + loss_1
+        return self.lamda * loss_0 + loss_1
 
     def update(self, loss_0, loss_1):
         dir = loss_0.detach().item() - self.delta
-        self.lamda = max(0, self.lamda + self.rho * dir)
+        self.lamda = max(0.1, self.lamda + self.rho * dir)
 
         
