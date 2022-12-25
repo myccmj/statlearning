@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 import numpy as np
 import classifiers as cf
 
@@ -13,6 +14,12 @@ class Model(object):
             self.method = Base()
         elif method == 'lagrange':
             self.method = Lagrange(delta)
+        elif method == 'csa':
+            self.method = CSA(delta)
+        elif method == 'penalty':
+            self.method = Penalty(delta)
+        elif method == 'penalty2':
+            self.method = PenaltyV2(delta)
         
         self.optimizer = torch.optim.Adam(self.classifier.parameters(), lr=lr)
         self.delta = delta
@@ -69,5 +76,48 @@ class Lagrange(object):
     def update(self, loss_0, loss_1):
         dir = loss_0.detach().item() - self.delta
         self.lamda = max(0, self.lamda + self.rho * dir)
+
+
+class CSA(object):
+    def __init__(self, delta, initial=1.25):
+        self.delta = initial * delta
+    
+    def weight_loss(self, loss_0, loss_1):
+        if loss_0 > self.delta:
+            return loss_0
+        else:
+            return loss_1
+
+    def update(self, loss_0, loss_1):
+        pass
+
+
+class Penalty(object):
+    def __init__(self, delta):
+        self.weight = 1.0/(delta+1e-6)
+        self.delta = delta
+    
+    def weight_loss(self, loss_0, loss_1):
+        return self.weight * F.relu(loss_0-self.delta) + loss_1
+
+    def update(self, loss_0, loss_1):
+        pass
+
+
+class PenaltyV2(object):
+    def __init__(self, delta, rho=1.1, initial=1.5):
+        self.delta = delta
+        self.delta_pen = initial * delta
+        self.rho = rho
+        self.weight = 1.0
+        self.total_it = 0
+    
+    def weight_loss(self, loss_0, loss_1):
+         return self.weight * F.relu(loss_0-self.delta) + loss_1
+
+    def update(self, loss_0, loss_1):
+        self.total_it += 1
+        if loss_0.detach().item() > self.delta_pen and self.total_it % 50 == 0:
+            self.weight = min(self.weight * self.rho, 1.0/(self.delta+1e-6))
 
         

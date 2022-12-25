@@ -15,7 +15,7 @@ def config():
     parser.add_argument("--method", default="lagrange")
     parser.add_argument("--train_type", default="base")
     parser.add_argument("--split_rate", default=0.8, type=float)
-    parser.add_argument("--bs_ratio", default=0.05, type=float)
+    parser.add_argument("--bs_ratio", default=0.1, type=float)
     parser.add_argument("--seed", default=0, type=int)             
     parser.add_argument("--epochs", default=1000, type=int)
     parser.add_argument("--file_name", default="")
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     train_op.train()
     train_op.feature_selection()
     file_name = args.classifier + args.file_name
-    train_op.save_results(file_name=file_name)
+    # train_op.save_results(file_name=file_name)
 
     
 
