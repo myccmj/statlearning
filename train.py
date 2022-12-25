@@ -1,4 +1,5 @@
 import torch
+import scipy.io as sio
 
 class Base_train(object):
     def __init__(self, model, x_data_0, x_data_1, y_data_0, y_data_1, epochs, split_rate=0.8, bs_ratio=0.05):
@@ -13,14 +14,15 @@ class Base_train(object):
         self.split_rate = split_rate
         self.bs_ratio = bs_ratio
 
+        self.train_loss_0 = []
+        self.train_loss_1 = []
+        self.test_loss_0 = []
+        self.test_loss_1 = []
+
+
     def step(self, x_train_0, x_train_1, x_test_0, x_test_1):
         train_loader_0 = torch.utils.data.DataLoader(x_train_0, batch_size=int(self.bs_ratio*x_train_0.shape[0]+1))
         train_loader_1 = torch.utils.data.DataLoader(x_train_1, batch_size=int(self.bs_ratio*x_train_1.shape[0]+1))
-
-        train_loss_0 = []
-        train_loss_1 = []
-        test_loss_0 = []
-        test_loss_1 = []
 
         for e in range(self.epochs):
             tr_loss_0 = 0
@@ -35,13 +37,10 @@ class Base_train(object):
                 print(f'Train {e+1} steps | 0 type loss: {tr_loss_0/len(train_loader_0)} | 1 type loss: {tr_loss_1/len(train_loader_0)} | total loss: {tr_loss/len(train_loader_0)}')
                 te_loss_0, te_loss_1, te_loss = self.model.test(x_test_0, x_test_1)
                 print(f'Test | 0 type loss: {te_loss_0} | 1 type loss: {te_loss_1} | total loss: {te_loss}')
-                train_loss_0.append(tr_loss_0/len(train_loader_0))
-                train_loss_1.append(tr_loss_1/len(train_loader_0))
-                test_loss_0.append(te_loss_0)
-                test_loss_1.append(te_loss_1)
-        
-        return train_loss_0, train_loss_1, test_loss_0, test_loss_1
-
+                self.train_loss_0.append(tr_loss_0/len(train_loader_0))
+                self.train_loss_1.append(tr_loss_1/len(train_loader_0))
+                self.test_loss_0.append(te_loss_0)
+                self.test_loss_1.append(te_loss_1)
 
     # Base train, Cross-validation, ...
     def train(self):
@@ -59,4 +58,7 @@ class Base_train(object):
 
     # Save results
     def save_results(self,filename='Default'):
-        self.model.save(filename)
+        # self.model.save(filename)
+        sio.savemat(f'{filename}.mat', {'train_loss_0': self.train_loss_0, 'train_loss_1': self.train_loss_1,
+                                'test_loss_0': self.test_loss_0, 'test_loss_1': self.test_loss_1})
+

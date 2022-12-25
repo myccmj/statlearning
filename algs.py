@@ -105,7 +105,7 @@ class Penalty(object):
 
 
 class PenaltyV2(object):
-    def __init__(self, delta, rho=1.1, initial=1.5):
+    def __init__(self, delta, rho=1.1, initial=1.1):
         self.delta = delta
         self.delta_pen = initial * delta
         self.rho = rho
