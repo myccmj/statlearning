@@ -22,4 +22,8 @@ for(i in 1:4601)
   if(err[i]==1)
     n10=n10+1
 }
-table(glm.pred,Direction)
+#随机森林
+library(randomForest)
+rd.fit=randomForest(as.factor(V58)~.,data=Spam.train)
+rd.fit
+

@@ -3,13 +3,15 @@ import numpy as np
 import classifiers as cf
 
 class Model(object):
-    def __init__(self, dims, delta, lr=1e-3, classifier='linear', method='lagrange'):
+    def __init__(self, dims, delta, lr=1e-3, classifier='linear', method='lagrange',divide_dims=False):
         if classifier == 'linear':
-            self.classifier = cf.exp_linear(dims)
+            self.classifier = cf.exp_linear(dims,divide_dims)
         if classifier == 'linear_logistic':
-            self.classifier = cf.logistic(dims)
+            self.classifier = cf.logistic(dims,divide_dims)
         if classifier == 'DNN':
-            self.classifier = cf.DNN(dims)
+            self.classifier = cf.DNN(dims,divide_dims)
+        if classifier == 'LDA':
+            self.classifier = cf.LDA(dims,divide_dims)
         
         if method == 'base':
             self.method = Base()
@@ -70,7 +72,7 @@ class Lagrange(object):
         self.rho = rho
     
     def weight_loss(self, loss_0, loss_1):
-        return self.lamda * loss_0 + loss_1
+        return self.lamda *loss_0 + loss_1
 
     def update(self, loss_0, loss_1):
         dir = loss_0.detach().item() - self.delta

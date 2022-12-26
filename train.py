@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 class Base_train(object):
     def __init__(self, model, x_data_0, x_data_1, y_data_0, y_data_1, epochs, split_rate=0.8, bs_ratio=0.05):
@@ -51,7 +52,7 @@ class Base_train(object):
         tr_size = int(self.split_rate * len(self.x_data_1))
         x_train_1, x_test_1 = self.x_data_1[0:tr_size, :], self.x_data_1[tr_size:-1, :]
 
-        self.step(x_train_0, x_train_1, x_test_0, x_test_1)
+        return self.step(x_train_0, x_train_1, x_test_0, x_test_1)
 
     # Feature selection
     def feature_selection(self):
